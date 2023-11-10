@@ -235,6 +235,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Rig
       objectReference: {fileID: 0}
+    - target: {fileID: 5609791579423962305, guid: fe799b2d0a84dfe43b001b56276fd2fb,
+        type: 3}
+      propertyPath: near clip plane
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 6169045109616253027, guid: fe799b2d0a84dfe43b001b56276fd2fb,
         type: 3}
       propertyPath: m_TrackingStateInput.m_Action.m_Id
@@ -542,7 +547,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controllerAreaMaterial: {fileID: 2100000, guid: dfc08c90188302847afb04f628582097,
     type: 2}
-  controllerPositionOffset: {x: 0, y: 0.1, z: 0.1}
+  controllerPositionOffset: {x: 0, y: 0.1, z: 0.2}
   displayControllerInfoFrequency: 0.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

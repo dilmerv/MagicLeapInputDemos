@@ -37,6 +37,7 @@ public class ControllerInputManager : MonoBehaviour
     }
 
 
+    // Helpful input reference https://developer-docs.magicleap.cloud/docs/guides/unity/input/controller/unity-controller-api-overview/
     private IEnumerator DisplayControllerActions()
     {
         while (true)
@@ -54,6 +55,11 @@ public class ControllerInputManager : MonoBehaviour
             
                 Logger.Instance.LogInfo($"Controller Bumper Action: {controllerActions.Bumper.inProgress}");
                 Logger.Instance.LogInfo($"Controller Trigger Action: {controllerActions.Trigger.inProgress}");
+                
+                // Do this after 2nd build
+                Logger.Instance.LogInfo($"Controller Acceleration: {controllerActions.Acceleration.ReadValue<Vector3>()}");
+                Logger.Instance.LogInfo($"Controller Touchpad Position: {controllerActions.TouchpadPosition.ReadValue<Vector2>()}");
+                Logger.Instance.LogInfo($"Controller Touchpad Force: {controllerActions.TouchpadForce.ReadValue<float>()}");
             }
         }
     }
@@ -87,6 +93,7 @@ public class ControllerInputManager : MonoBehaviour
     
     private void TriggerPerformed(InputAction.CallbackContext obj)
     {
+        controllerArea.GetComponent<Renderer>().material.color =  Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
         var triggerValue = obj.ReadValue<float>();
         Logger.Instance.LogInfo($"Trigger Performed {triggerValue}");
     }
@@ -94,6 +101,8 @@ public class ControllerInputManager : MonoBehaviour
     // Bumper
     private void BumperPerformed(InputAction.CallbackContext obj)
     {
+        var randomScale = Random.Range(0.05f, 0.25f);
+        controllerArea.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
         Logger.Instance.LogInfo($"Bumper Performed");
     }
     
