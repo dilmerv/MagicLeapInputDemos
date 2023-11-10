@@ -1,12 +1,14 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Logger = LearnXR.Core.Logger;
 
 public class ControllerInputManager : MonoBehaviour
 {
+    [SerializeField] private Material controllerAreaMaterial;
+    [SerializeField] private Vector3 controllerPositionOffset;
+    [SerializeField] private float displayControllerInfoFrequency = 0.5f;
+    
     private MagicLeapInputs magicLeapInputs;
     private MagicLeapInputs.ControllerActions controllerActions;
 
@@ -26,18 +28,50 @@ public class ControllerInputManager : MonoBehaviour
         controllerActions.Bumper.performed += BumperPerformed;
         controllerActions.Bumper.canceled += BumperCanceled;
 
-        controllerArea = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        // controller position
+        controllerArea = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        controllerArea.GetComponent<Renderer>().material = controllerAreaMaterial;
         controllerArea.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+
+        StartCoroutine(DisplayControllerActions());
+    }
+
+
+    private IEnumerator DisplayControllerActions()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(displayControllerInfoFrequency);
+            
+            if (controllerActions.IsTracked.IsPressed())
+            {
+                // reading the values from InputActions
+                var controllerPosition = controllerActions.Position.ReadValue<Vector3>();
+                var controllerRotation = controllerActions.Rotation.ReadValue<Quaternion>();
+                
+                Logger.Instance.LogInfo($"Controller Position: {controllerPosition}");
+                Logger.Instance.LogInfo($"Controller Rotation: {controllerRotation}");
+            
+                Logger.Instance.LogInfo($"Controller Bumper Action: {controllerActions.Bumper.inProgress}");
+                Logger.Instance.LogInfo($"Controller Trigger Action: {controllerActions.Trigger.inProgress}");
+            }
+        }
     }
 
     private void Update()
     {
         if (controllerActions.IsTracked.IsPressed())
         {
-            controllerArea.transform.position = controllerActions.Position.ReadValue<Vector3>();
+            controllerArea.transform.position = controllerActions.Position.ReadValue<Vector3>() + controllerPositionOffset;
+            
+            // Do this after the first deployed and first demo
+            // Deploy and quickly show
+            controllerArea.transform.rotation = controllerActions.Rotation.ReadValue<Quaternion>();
         }
     }
 
+    // Callbacks for subscribed input events
+    
     // Trigger
     private void TriggerStarted(InputAction.CallbackContext obj)
     {
@@ -66,5 +100,16 @@ public class ControllerInputManager : MonoBehaviour
     private void BumperCanceled(InputAction.CallbackContext obj)
     {
         Logger.Instance.LogInfo($"Bumper Canceled");
+    }
+    
+    // Clean Up
+    private void OnDestroy()
+    {
+        controllerActions.Trigger.started -= TriggerStarted;
+        controllerActions.Trigger.performed -= TriggerPerformed;
+        controllerActions.Trigger.canceled -= TriggerCanceled;
+
+        controllerActions.Bumper.performed -= BumperPerformed;
+        controllerActions.Bumper.canceled -= BumperCanceled;
     }
 }
