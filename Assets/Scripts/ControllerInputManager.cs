@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.InteractionSubsystems;
+using UnityEngine.XR.MagicLeap;
 using Logger = LearnXR.Core.Logger;
 
 public class ControllerInputManager : MonoBehaviour
@@ -13,7 +15,11 @@ public class ControllerInputManager : MonoBehaviour
     private MagicLeapInputs.ControllerActions controllerActions;
 
     private GameObject controllerArea;
+    private Color lastGeneratedRandomColor;
+    private Vector3 lastControllerKnownPosition;
+    private Quaternion lastControllerKnownRotation;
     
+    private GestureSubsystem.Extensions.TouchpadGestureEvent gestureEvent;
     void Start()
     {
         magicLeapInputs = new MagicLeapInputs();
@@ -34,8 +40,42 @@ public class ControllerInputManager : MonoBehaviour
         controllerArea.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
 
         StartCoroutine(DisplayControllerActions());
+        
+        // gestures
+        // Add this after the 2nd build
+        MLDevice.RegisterGestureSubsystem();
+
+        if (MLDevice.GestureSubsystemComponent != null)
+        {
+            MLDevice.GestureSubsystemComponent.onTouchpadGestureChanged += GestureDetected;
+        }
     }
 
+    private void GestureDetected(GestureSubsystem.Extensions.TouchpadGestureEvent gestureEvent)
+    {
+        this.gestureEvent = gestureEvent;
+        Debug.Log($"New gesture detected: {gestureEvent}");
+        
+        // Swipe up gesture
+        if (this.gestureEvent is { type: InputSubsystem.Extensions.TouchpadGesture.Type.Swipe, 
+                direction: InputSubsystem.Extensions.TouchpadGesture.Direction.Up, state: GestureState.Completed })
+        {
+            var ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            ball.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            
+            // position ball initially at controller pos + an offset
+            ball.transform.position = lastControllerKnownPosition + new Vector3(0, 0.1f, 0.1f);
+            ball.transform.rotation = lastControllerKnownRotation;
+            
+            var ballRenderer = ball.GetComponent<Renderer>();
+            ballRenderer.material = controllerAreaMaterial;
+            ballRenderer.material.color = lastGeneratedRandomColor;
+            var ballRigidbody = ball.AddComponent<Rigidbody>();
+            ballRigidbody.AddForce(Vector3.forward * 350.0f);
+            
+            Destroy(ball, 5.0f);
+        }
+    }
 
     // Helpful input reference https://developer-docs.magicleap.cloud/docs/guides/unity/input/controller/unity-controller-api-overview/
     private IEnumerator DisplayControllerActions()
@@ -69,10 +109,12 @@ public class ControllerInputManager : MonoBehaviour
         if (controllerActions.IsTracked.IsPressed())
         {
             controllerArea.transform.position = controllerActions.Position.ReadValue<Vector3>() + controllerPositionOffset;
+            lastControllerKnownPosition = controllerActions.Position.ReadValue<Vector3>();
             
             // Do this after the first deployed and first demo
             // Deploy and quickly show
             controllerArea.transform.rotation = controllerActions.Rotation.ReadValue<Quaternion>();
+            lastControllerKnownRotation = controllerActions.Rotation.ReadValue<Quaternion>();
         }
     }
 
@@ -93,7 +135,8 @@ public class ControllerInputManager : MonoBehaviour
     
     private void TriggerPerformed(InputAction.CallbackContext obj)
     {
-        controllerArea.GetComponent<Renderer>().material.color =  Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        lastGeneratedRandomColor = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        controllerArea.GetComponent<Renderer>().material.color = lastGeneratedRandomColor;
         var triggerValue = obj.ReadValue<float>();
         Logger.Instance.LogInfo($"Trigger Performed {triggerValue}");
     }
@@ -120,5 +163,12 @@ public class ControllerInputManager : MonoBehaviour
 
         controllerActions.Bumper.performed -= BumperPerformed;
         controllerActions.Bumper.canceled -= BumperCanceled;
+        
+        // gesture event removal
+        if (MLDevice.GestureSubsystemComponent != null)
+        {
+            MLDevice.GestureSubsystemComponent.onTouchpadGestureChanged -= GestureDetected;
+            MLDevice.UnregisterGestureSubsystem();
+        }
     }
 }
