@@ -33,7 +33,7 @@ public class ControllerInputManager : MonoBehaviour
 
         controllerActions.Bumper.performed += BumperPerformed;
         controllerActions.Bumper.canceled += BumperCanceled;
-
+        
         // controller position
         controllerArea = GameObject.CreatePrimitive(PrimitiveType.Cube);
         controllerArea.GetComponent<Renderer>().material = controllerAreaMaterial;
