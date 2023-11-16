@@ -19,7 +19,7 @@ public class ControllerInputManager : MonoBehaviour
     private Vector3 lastControllerKnownPosition;
     private Quaternion lastControllerKnownRotation;
     
-    private GestureSubsystem.Extensions.TouchpadGestureEvent gestureEvent;
+    private GestureSubsystem.Extensions.TouchpadGestureEvent currentGestureEvent;
     void Start()
     {
         magicLeapInputs = new MagicLeapInputs();
@@ -41,8 +41,7 @@ public class ControllerInputManager : MonoBehaviour
 
         StartCoroutine(DisplayControllerActions());
         
-        // gestures
-        // Add this after the 2nd build
+        // gesture system registration
         MLDevice.RegisterGestureSubsystem();
 
         if (MLDevice.GestureSubsystemComponent != null)
@@ -53,11 +52,11 @@ public class ControllerInputManager : MonoBehaviour
 
     private void GestureDetected(GestureSubsystem.Extensions.TouchpadGestureEvent gestureEvent)
     {
-        this.gestureEvent = gestureEvent;
+        currentGestureEvent = gestureEvent;
         Debug.Log($"New gesture detected: {gestureEvent}");
         
         // Swipe up gesture
-        if (this.gestureEvent is { type: InputSubsystem.Extensions.TouchpadGesture.Type.Swipe, 
+        if (currentGestureEvent is { type: InputSubsystem.Extensions.TouchpadGesture.Type.Swipe, 
                 direction: InputSubsystem.Extensions.TouchpadGesture.Direction.Up, state: GestureState.Completed })
         {
             var ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -71,7 +70,7 @@ public class ControllerInputManager : MonoBehaviour
             ballRenderer.material = controllerAreaMaterial;
             ballRenderer.material.color = lastGeneratedRandomColor;
             var ballRigidbody = ball.AddComponent<Rigidbody>();
-            ballRigidbody.AddForce(Vector3.forward * 350.0f);
+            ballRigidbody.AddForce(controllerArea.transform.forward * 450.0f);
             
             Destroy(ball, 5.0f);
         }
@@ -96,7 +95,6 @@ public class ControllerInputManager : MonoBehaviour
                 Logger.Instance.LogInfo($"Controller Bumper Action: {controllerActions.Bumper.inProgress}");
                 Logger.Instance.LogInfo($"Controller Trigger Action: {controllerActions.Trigger.inProgress}");
                 
-                // Do this after 2nd build
                 Logger.Instance.LogInfo($"Controller Acceleration: {controllerActions.Acceleration.ReadValue<Vector3>()}");
                 Logger.Instance.LogInfo($"Controller Touchpad Position: {controllerActions.TouchpadPosition.ReadValue<Vector2>()}");
                 Logger.Instance.LogInfo($"Controller Touchpad Force: {controllerActions.TouchpadForce.ReadValue<float>()}");
@@ -108,13 +106,11 @@ public class ControllerInputManager : MonoBehaviour
     {
         if (controllerActions.IsTracked.IsPressed())
         {
-            controllerArea.transform.position = controllerActions.Position.ReadValue<Vector3>() + controllerPositionOffset;
             lastControllerKnownPosition = controllerActions.Position.ReadValue<Vector3>();
+            controllerArea.transform.position = lastControllerKnownPosition + controllerPositionOffset;
             
-            // Do this after the first deployed and first demo
-            // Deploy and quickly show
-            controllerArea.transform.rotation = controllerActions.Rotation.ReadValue<Quaternion>();
             lastControllerKnownRotation = controllerActions.Rotation.ReadValue<Quaternion>();
+            controllerArea.transform.rotation = lastControllerKnownRotation;
         }
     }
 

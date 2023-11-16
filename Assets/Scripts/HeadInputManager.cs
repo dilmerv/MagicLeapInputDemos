@@ -21,6 +21,7 @@ public class HeadInputManager : MonoBehaviour
             headposePositionInputAction.action.Enable();
             headposePositionInputAction.action.performed += PositionChanged;
         }
+        
         if (headposeRotationInputAction != null)
         {
             headposeRotationInputAction.action.Enable();
