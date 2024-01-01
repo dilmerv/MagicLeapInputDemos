@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.magicleap.appsim": {
+      "version": "file:/Users/dilmerv/MagicLeap/tools/app_sim_unity/v3.7.0.20231006/com.magicleap.appsim.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.magicleap.unitysdk": "1.1.0",
+        "com.unity.editorcoroutines": "1.0.0"
+      }
+    },
     "com.magicleap.setuptool": {
       "version": "file:com.magicleap.setuptool",
       "depth": 0,
@@ -7,7 +16,7 @@
       "dependencies": {}
     },
     "com.magicleap.unitysdk": {
-      "version": "1.12.0",
+      "version": "1.12.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -38,7 +47,7 @@
     },
     "com.unity.editorcoroutines": {
       "version": "1.0.0",
-      "depth": 2,
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
