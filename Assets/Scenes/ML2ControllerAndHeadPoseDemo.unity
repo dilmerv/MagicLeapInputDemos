@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18018535, g: 0.22559482, b: 0.30677685, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028326, g: 0.22571333, b: 0.30692202, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -263,11 +263,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1767072447611923508, guid: fb77d2780a4a945e780842445e7fef7d,
-        type: 3}
-      propertyPath: m_text
-      value: '[LOGGER AREA]'
-      objectReference: {fileID: 0}
     - target: {fileID: 2781207885716497921, guid: fb77d2780a4a945e780842445e7fef7d,
         type: 3}
       propertyPath: m_Pivot.x
@@ -372,11 +367,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Logger
-      objectReference: {fileID: 0}
-    - target: {fileID: 3832907309610596175, guid: fb77d2780a4a945e780842445e7fef7d,
-        type: 3}
-      propertyPath: maxLines
-      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -1,14 +1,5 @@
 {
   "dependencies": {
-    "com.magicleap.appsim": {
-      "version": "file:/Users/dilmerv/MagicLeap/tools/app_sim_unity/v3.7.0.20230919/com.magicleap.appsim.tgz",
-      "depth": 0,
-      "source": "local-tarball",
-      "dependencies": {
-        "com.magicleap.unitysdk": "1.1.0",
-        "com.unity.editorcoroutines": "1.0.0"
-      }
-    },
     "com.magicleap.setuptool": {
       "version": "file:com.magicleap.setuptool",
       "depth": 0,
@@ -30,7 +21,7 @@
       "url": "https://registry.npmjs.org"
     },
     "com.unity.burst": {
-      "version": "1.8.9",
+      "version": "1.8.11",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -47,7 +38,7 @@
     },
     "com.unity.editorcoroutines": {
       "version": "1.0.0",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -60,7 +51,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.25",
+      "version": "3.0.27",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -69,7 +60,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.21",
+      "version": "2.0.22",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -117,9 +108,18 @@
       "source": "builtin",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
-        "com.unity.burst": "1.8.4",
+        "com.unity.burst": "1.8.9",
         "com.unity.render-pipelines.core": "14.0.9",
-        "com.unity.shadergraph": "14.0.9"
+        "com.unity.shadergraph": "14.0.9",
+        "com.unity.render-pipelines.universal-config": "14.0.9"
+      }
+    },
+    "com.unity.render-pipelines.universal-config": {
+      "version": "14.0.9",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.render-pipelines.core": "14.0.9"
       }
     },
     "com.unity.searcher": {
@@ -159,7 +159,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.7.5",
+      "version": "1.7.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -190,7 +190,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.arfoundation": {
-      "version": "5.1.0",
+      "version": "5.1.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -217,7 +217,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.interaction.toolkit": {
-      "version": "2.5.1",
+      "version": "2.5.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
