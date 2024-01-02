@@ -110,7 +110,7 @@ PrefabInstance:
     - target: {fileID: 5589497133593145652, guid: fe799b2d0a84dfe43b001b56276fd2fb,
         type: 3}
       propertyPath: m_Name
-      value: XR Rig Variant
+      value: XR Rig
       objectReference: {fileID: 0}
     - target: {fileID: 5609791579423962305, guid: fe799b2d0a84dfe43b001b56276fd2fb,
         type: 3}

@@ -556,6 +556,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3002798113294320914, guid: 133dcf1e5338548adbcc868909cbba47,
         type: 3}
+      propertyPath: boneNamesVisibility
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3002798113294320914, guid: 133dcf1e5338548adbcc868909cbba47,
+        type: 3}
       propertyPath: boneVisibilityConfidence
       value: 0.5
       objectReference: {fileID: 0}
