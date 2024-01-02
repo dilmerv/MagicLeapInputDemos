@@ -36,13 +36,6 @@ public class HandTrackingManager : MonoBehaviour
     private List<Bone> rightHandThumbBones = new ();
 
     private Dictionary<string, GameObject> boneIndicators = new();
-
-
-    public class BoneWithName
-    {
-        public string BoneName { get; set; }
-        public Bone Bone { get; set; }
-    }
     
     private enum HandSkeletonFor
     {
