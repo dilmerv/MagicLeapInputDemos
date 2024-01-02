@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Extensions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.MagicLeap;
@@ -14,11 +16,12 @@ public class HandTrackingManager : MonoBehaviour
     [Range(0,1.0f)]
     private float boneVisibilityConfidence;
 
+    [SerializeField] private bool boneNamesVisibility;
+
     [SerializeField] private bool verboseHandTrackingLog;
     
     private InputDevice leftHandDevice;
     private InputDevice rightHandDevice;
-    private InputDevice handGestureDevice;
     
     private List<Bone> leftHandPinkyFingerBones = new ();
     private List<Bone> leftHandRingFingerBones = new ();
@@ -32,9 +35,15 @@ public class HandTrackingManager : MonoBehaviour
     private List<Bone> rightHandIndexFingerBones = new ();
     private List<Bone> rightHandThumbBones = new ();
 
-    
     private Dictionary<string, GameObject> boneIndicators = new();
 
+
+    public class BoneWithName
+    {
+        public string BoneName { get; set; }
+        public Bone Bone { get; set; }
+    }
+    
     private enum HandSkeletonFor
     {
         LeftHand,
@@ -70,14 +79,14 @@ public class HandTrackingManager : MonoBehaviour
         {
             DisplayFeatures($"{leftHandDevice.name}", leftHandDevice);
             BuilHandSimpleSkeleton(HandSkeletonFor.LeftHand);
-            DisplayGestures(HandSkeletonFor.LeftHand);
+            DisplayGesturesInfo(HandSkeletonFor.LeftHand);
         }
 
         if (rightHandDevice.isValid)
         {
             DisplayFeatures($"{leftHandDevice.name}", rightHandDevice);
             BuilHandSimpleSkeleton(HandSkeletonFor.RightHand);
-            DisplayGestures(HandSkeletonFor.RightHand);
+            DisplayGesturesInfo(HandSkeletonFor.RightHand);
         }
     }
 
@@ -94,7 +103,7 @@ public class HandTrackingManager : MonoBehaviour
         }
     }
 
-    private void DisplayGestures(HandSkeletonFor handSkeletonFor)
+    private void DisplayGesturesInfo(HandSkeletonFor handSkeletonFor)
     {
         List<InputDevice> devices = new List<InputDevice>();
         InputDevices.GetDevices(devices);
@@ -140,49 +149,51 @@ public class HandTrackingManager : MonoBehaviour
         }
     }
 
-    private List<Bone> CombineBones(HandSkeletonFor handSkeletonFor)
+    private List<BoneWithName> CombineBones(HandSkeletonFor handSkeletonFor)
     {
-        List<Bone> handBones;
+        List<BoneWithName> handBones;
         if (handSkeletonFor == HandSkeletonFor.LeftHand)
         {
-            handBones = leftHandThumbBones
-                .Concat(leftHandIndexFingerBones)
-                .Concat(leftHandMiddleFingerBones)
-                .Concat(leftHandRingFingerBones)
-                .Concat(leftHandPinkyFingerBones)
+            handBones = leftHandThumbBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Thumb)
+                .Concat(leftHandIndexFingerBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Index))
+                .Concat(leftHandMiddleFingerBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Middle))
+                .Concat(leftHandRingFingerBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Ring))
+                .Concat(leftHandPinkyFingerBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Pinky))
                 .ToList();
         }
         else
         {
-            handBones = rightHandThumbBones
-                .Concat(rightHandIndexFingerBones)
-                .Concat(rightHandMiddleFingerBones)
-                .Concat(rightHandRingFingerBones)
-                .Concat(rightHandPinkyFingerBones)
+            handBones = rightHandThumbBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Thumb)
+                .Concat(rightHandIndexFingerBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Index))
+                .Concat(rightHandMiddleFingerBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Middle))
+                .Concat(rightHandRingFingerBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Ring))
+                .Concat(rightHandPinkyFingerBones.GenerateBonesWithNames(InputSubsystem.Extensions.MLHandTracking.KeyPointLocation.Pinky))
                 .ToList();
         }
 
         return handBones;
     }
-    
-    private void BuildHandVisualizer(HandSkeletonFor handSkeletonFor, List<Bone> bones)
+
+    private void BuildHandVisualizer(HandSkeletonFor handSkeletonFor, List<BoneWithName> bones)
     {
         int boneId = 0;
-        foreach (var bone in bones)
+        foreach (var boneInfo in bones)
         {
-            var boneKeyName = $"{handSkeletonFor}_{bone}_{boneId}";
-            bone.TryGetPosition(out Vector3 bonePosition);
-            bone.TryGetRotation(out Quaternion boneRotation);
+            var boneKeyName = $"{handSkeletonFor}_{boneInfo}_{boneId}";
+            boneInfo.Bone.TryGetPosition(out Vector3 bonePosition);
+            boneInfo.Bone.TryGetRotation(out Quaternion boneRotation);
             GameObject boneVisualizer = null;
             
             if (!boneIndicators.ContainsKey(boneKeyName))
             {
-                boneVisualizer = Instantiate(handPrefabForKeypoint);
-                boneVisualizer.transform.SetParent(transform);
+                boneVisualizer = Instantiate(handPrefabForKeypoint, transform, true);
                 boneIndicators.Add(boneKeyName, boneVisualizer);    
             }
             
             boneVisualizer = boneIndicators[boneKeyName];
+            var boneVisualizerInfo = boneVisualizer.GetComponentInChildren<TextMeshPro>(true);
+            boneVisualizerInfo.text = boneInfo.BoneName;
+            boneVisualizerInfo.gameObject.SetActive(boneNamesVisibility);
             boneVisualizer.transform.localPosition = bonePosition;
             boneVisualizer.transform.localRotation = boneRotation;
             boneId++;
